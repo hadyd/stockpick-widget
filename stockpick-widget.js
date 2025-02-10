@@ -115,6 +115,9 @@
       .stock-item .coloumn-4 {
         margin-left: auto;
       }
+      .stock-item .coloumn-2 {
+        width: 120px;
+      }
       .stock-item .coloumn-4 .stock-recommendation {
         padding: 5px 15px;
         border-radius: 4px;
@@ -154,50 +157,26 @@
     opacity: 1;
   }
 }
-    `;
+  .stock-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+}
 
-  const stockData = [
-    {
-      logo: 'https://i.ibb.co/zmJYpjd/BBCA.png',
-      code: 'BBCA',
-      name: 'PT Bank Central Asia Tbk',
-      price: '10,500',
-      percentage: '+20.34%',
-      recommendation: 'BUY',
-    },
-    {
-      logo: 'https://i.ibb.co/ryTbkrN/ITMG.png',
-      code: 'ITMG',
-      name: 'PT Indo Megah Tbk.',
-      price: '4,200',
-      percentage: '+17.67%',
-      recommendation: 'BUY',
-    },
-    {
-      logo: 'https://i.ibb.co/YQ34nsL/BMRI.png',
-      code: 'BMRI',
-      name: 'PT Bank Mandiri Tbk',
-      price: '10,500',
-      percentage: '-1.32%',
-      recommendation: 'SELL',
-    },
-    {
-      logo: 'https://i.ibb.co/Bt78J6b/BBRI.png',
-      code: 'BBRI',
-      name: 'PT Bank Rakyat Indonesia Tbk',
-      price: '4,200',
-      percentage: '+15.67%',
-      recommendation: 'HOLD',
-    },
-    {
-      logo: 'https://i.ibb.co/myPh6jX/BBNI.png',
-      code: 'BBNI',
-      name: 'PT Bank Negara Indonesia Tbk',
-      price: '10,500',
-      percentage: '+15.67%',
-      recommendation: 'BUY',
-    },
-  ];
+.stock-logo.fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f58220;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+    `;
 
   const truncateText = (text, maxLength) => {
     return text.length > maxLength
@@ -222,28 +201,72 @@
     item.href = 'https://fima.co.id/';
     item.target = '_blank';
     item.rel = 'noopener noreferrer';
+
     item.innerHTML = `
-        <div class="coloumn-1">
-          <img src="${logo}" alt="${code} logo" />
-        </div>
-        <div class="coloumn-2">
-          <h2>${code}</h2>
-          <p>${truncateText(name, 18)}</p>
-        </div>
-        <div class="coloumn-3">
-          <span class="stock-price ${getColorClass(price)}">${price}</span>
-          <span class="percentage ${getColorClass(
-            percentage
-          )}">${percentage}</span>
-        </div>
-        <div class="coloumn-4">
-          <span class="stock-recommendation ${recommendation.toLowerCase()}">${recommendation}</span>
-        </div>
-      `;
+      <div class="coloumn-1">
+        <img class="stock-logo" src="${logo}" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" alt="${code}">
+        <div class="stock-logo fallback" style="display: none;">${code.slice(
+          0,
+          2
+        )}</div>
+      </div>
+      <div class="coloumn-2">
+        <h2>${code}</h2>
+        <p>${truncateText(name, 18)}</p>
+      </div>
+      <div class="coloumn-3">
+        <span class="stock-price ${getColorClass(price)}">${price}</span>
+        <span class="percentage ${getColorClass(
+          percentage
+        )}">${percentage}</span>
+      </div>
+      <div class="coloumn-4">
+        <span class="stock-recommendation ${recommendation.toLowerCase()}">${recommendation}</span>
+      </div>
+    `;
+
     return item;
   };
 
-  const loadWidget = () => {
+  const fetchStockData = async () => {
+    try {
+      const response = await fetch(
+        'https://api.dev.miraeasset.io/services/financialdata/api/stock-pick'
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      const x = data.data.map((stock) => {
+        const ticker = stock.attributes.master_stock.data.attributes.ticker;
+        const fallbackLogo = `https://via.placeholder.com/40/FFA500/FFFFFF?text=${ticker.substring(
+          0,
+          2
+        )}`;
+
+        return {
+          logo:
+            `https://dev-minio-1628151906.miraeasset.io/web-research/stock_image/${ticker}.png` ||
+            fallbackLogo,
+          code: ticker,
+          name: stock.attributes.master_stock.data.attributes.name,
+          price: Number(
+            stock.attributes.master_stock.data.attributes.close_price
+          ).toLocaleString('id-ID'),
+          percentage: `${Number(
+            stock.attributes.master_stock.data.attributes.change_percent
+          ).toFixed(2)}%`,
+          recommendation: stock.attributes.Recommendation,
+        };
+      });
+      return x;
+    } catch (error) {
+      console.error('Failed to fetch stock data:', error);
+      return [];
+    }
+  };
+
+  const loadWidget = async () => {
     let styleTag = document.createElement('style');
     styleTag.textContent = styles;
     document.head.appendChild(styleTag);
@@ -263,9 +286,14 @@
         `;
 
       const stockList = document.getElementById('stock-list');
-      stockData.forEach((stock) => {
-        stockList.appendChild(createStockItem(stock));
-      });
+      const stockData = await fetchStockData();
+      if (stockData.length) {
+        stockData.forEach((stock) => {
+          stockList.appendChild(createStockItem(stock));
+        });
+      } else {
+        stockList.innerHTML = '<p>No stock data available at the moment.</p>';
+      }
     } else {
       console.error(`Container with ID "${containerId}" not found.`);
     }
