@@ -198,6 +198,12 @@ color: #F58220 !important;
         display: flex;
       }
 
+
+      .line {
+        border-top: 1px solid #E0E0E0;
+        padding-bottom: 10px;
+      }
+
       .banner-container {
         border-radius: 8px;
         align-items: center;
@@ -324,6 +330,8 @@ color: #F58220 !important;
               Market data provided by 
               <a href="https://fima.co.id/" class="fima-link" target="_blank" rel="noopener noreferrer">Fima.co.id</a>
             </p>
+
+                  <div class="line"></div>
 
               <div class="banner-container">
         <div>
