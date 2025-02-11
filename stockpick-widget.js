@@ -11,7 +11,7 @@
         background-color: #f8f9fa;
       }
       .stock-pick-container {
-        max-width: 330px;
+        width: 100%;
         margin: 0 auto;
         background: #ffffff;
         border-radius: 8px;
