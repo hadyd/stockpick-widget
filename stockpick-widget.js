@@ -299,8 +299,10 @@
     }
   };
 
-  if (!window.stockPickWidgetLoaded) {
-    window.stockPickWidgetLoaded = true;
-    loadWidget();
-  }
+  document.addEventListener('DOMContentLoaded', function () {
+    if (!window.stockPickWidgetLoaded) {
+      window.stockPickWidgetLoaded = true;
+      loadWidget();
+    }
+  });
 })();
