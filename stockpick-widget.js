@@ -175,6 +175,9 @@
   font-size: 14px;
   text-transform: uppercase;
 }
+  .credit {
+    padding-top: 20px;
+  }
 
     `;
 
@@ -278,7 +281,7 @@
             <h1>Stock Pick Today</h1>
             <p>Displayed data covers the 12-month Target Price, Potential Change, and Trading Recommendations.</p>
             <div id="stock-list"></div>
-            <p>
+            <p class="credit">
               Market data provided by 
               <a href="https://fima.co.id/" class="fima-link" target="_blank" rel="noopener noreferrer">Fima.co.id</a>
             </p>
