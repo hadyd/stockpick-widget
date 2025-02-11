@@ -177,6 +177,7 @@
 }
   .credit {
     padding-top: 20px;
+    margin-bottom: 13px !important;
   }
         .il-banner{
         width: 100px;
@@ -201,7 +202,7 @@ color: #F58220 !important;
 
       .line {
         border-top: 1px solid #E0E0E0;
-        padding-bottom: 10px;
+        padding-bottom: 18px;
       }
 
       .banner-container {
