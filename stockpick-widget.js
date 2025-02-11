@@ -178,6 +178,45 @@
   .credit {
     padding-top: 20px;
   }
+        .il-banner{
+        width: 100px;
+      }
+      .banner-text {
+font-weight: 700;
+font-size: 13px !important;
+line-height: 16.28px;
+color: #F58220 !important;
+
+
+      }
+      .il-store {
+        width: 86px;
+        cursor: pointer;
+      }
+      .il-banner-container {
+        justify-content: center;
+        display: flex;
+      }
+
+      .banner-container {
+        border-radius: 8px;
+        align-items: center;
+        border: 1px solid #E0E0E0;
+        box-shadow: 0px 4px 8px 0px #0000001A;
+        padding: 10px;
+  display: grid;
+  grid-template-columns: 63% 40%;
+  gap: 10px;
+
+  @media (max-width: 768px) {
+
+    .banner-text { 
+      font-size: 12px !important;
+    }
+    .il-banner{
+        width: 90px;
+      }
+  }
 
     `;
 
@@ -285,6 +324,26 @@
               Market data provided by 
               <a href="https://fima.co.id/" class="fima-link" target="_blank" rel="noopener noreferrer">Fima.co.id</a>
             </p>
+
+              <div class="banner-container">
+        <div>
+          <p class="banner-text">
+            Trade with MAIA on M-STOCK, so you don’t have to trade your future
+          </p>
+          <div>
+            <a href="https://apps.apple.com/app/m-stock/id1670096144" target="_blank" rel="noopener noreferrer">
+              <img class="il-store" src="https://storage.googleapis.com/mirae-webresearch-prd/mstock/AppStore.png" alt="Download M-STOCK App Store" />
+            </a>
+            <a href="https://play.google.com/store/apps/details?id=id.co.miraeasset.stock" target="_blank" rel="noopener noreferrer">
+              <img class="il-store" src="https://storage.googleapis.com/mirae-webresearch-prd/mstock/googlePlay.png" alt="Download M-STOCK Play Store" />
+            </a>
+
+          </div>
+        </div>
+        <div class="il-banner-container">  <img class="il-banner" src="https://cdn.miraeasset.co.id/popnotif/Illustration-1.png" alt="MAIA logo" />
+        </div>
+      </div>
+
           </div>
         `;
 
