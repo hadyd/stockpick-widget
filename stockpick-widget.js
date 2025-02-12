@@ -178,7 +178,6 @@ body {
   text-transform: uppercase;
 }
 .credit {
-  padding-top: 20px;
   margin-bottom: 13px !important;
 }
 .il-banner {
@@ -213,17 +212,35 @@ body {
   display: grid;
   grid-template-columns: 63% 40%;
   gap: 10px;
+}
 
-  @media (max-width: 768px) {
-    .banner-text {
-      font-size: 12px !important;
-    }
-    .il-banner {
-      width: 90px;
-    }
+@media (max-width: 768px) {
+  .banner-text {
+    font-size: 12px !important;
+  }
+  .il-banner {
+    width: 90px;
   }
 }
-    `;
+
+#see-more-btn,
+#see-less-btn {
+  display: block;
+  padding: 10px 20px;
+  background-color: #f58220;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+.action-btn {
+  display: flex;
+  justify-content: flex-end;
+  margin: 20px 0px;
+}
+  `;
 
   const truncateText = (text, maxLength) => {
     return text.length > maxLength
@@ -245,33 +262,38 @@ body {
   }) => {
     const item = document.createElement('a');
     item.className = 'stock-item';
-    item.href = 'https://fima.co.id/';
+    item.href = 'https://fima.co.id/?channel=fima-blog';
     item.target = '_blank';
     item.rel = 'noopener noreferrer';
 
     item.innerHTML = `
-      <div class="coloumn-1">
-        <img class="stock-logo" src="${logo}" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" alt="${code}">
-        <div class="stock-logo fallback" style="display: none;">${code.slice(
-          0,
-          2
-        )}</div>
+    <div class="coloumn-1">
+      <img
+        class="stock-logo"
+        src="${logo}"
+        onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';"
+        alt="${code}"
+      />
+      <div class="stock-logo fallback" style="display: none">
+        ${code.slice(0, 2)}
       </div>
-      <div class="coloumn-2">
-        <h2>${code}</h2>
-        <p>${truncateText(name, 18)}</p>
-      </div>
-      <div class="coloumn-3">
-        <span class="stock-price ${getColorClass(price)}">${price}</span>
-        <span class="percentage ${getColorClass(
-          percentage
-        )}">${percentage}</span>
-      </div>
-      <div class="coloumn-4">
-        <span class="stock-recommendation ${recommendation.toLowerCase()}">${recommendation}</span>
-      </div>
-    `;
-
+    </div>
+    <div class="coloumn-2">
+      <h2>${code}</h2>
+      <p>${truncateText(name, 18)}</p>
+    </div>
+    <div class="coloumn-3">
+      <span class="stock-price ${getColorClass(price)}">${price}</span>
+      <span class="percentage ${getColorClass(percentage)}"
+        >${percentage}</span
+      >
+    </div>
+    <div class="coloumn-4">
+      <span class="stock-recommendation ${recommendation.toLowerCase()}"
+        >${recommendation}</span
+      >
+    </div>
+      `;
     return item;
   };
 
@@ -291,7 +313,7 @@ body {
 
         return {
           logo:
-            `https://storage.googleapis.com/mirae-webresearch-prd/stocks/${ticker}.png ` ||
+            `https://storage.googleapis.com/mirae-webresearch-prd/stocks/${ticker}.png` ||
             fallbackLogo,
           code: ticker,
           name: stock.attributes.master_stock.data.attributes.name,
@@ -319,26 +341,28 @@ body {
     const container = document.getElementById(containerId);
     if (container) {
       container.innerHTML = `
-    <div class="stock-pick-container">
+      <div class="stock-pick-container">
       <h1>Stock Pick Today</h1>
       <p>
         Displayed data covers the 12-month Target Price, Potential Change, and
         Trading Recommendations.
       </p>
       <div id="stock-list"></div>
+      <div class="action-btn">
+      <button id="see-more-btn" style="display: none">See More</button>
+      <button id="see-less-btn" style="display: none">See Less</button>
+      </div>
       <p class="credit">
         Market data provided by
         <a
-          href="https://fima.co.id/"
+          href="https://fima.co.id/?channel=fima-blog"
           class="fima-link"
           target="_blank"
           rel="noopener noreferrer"
           >Fima.co.id</a
         >
       </p>
-
       <div class="line"></div>
-
       <div class="banner-container">
         <div>
           <p class="banner-text">
@@ -378,13 +402,39 @@ body {
         </div>
       </div>
     </div>
-        `;
+          `;
 
       const stockList = document.getElementById('stock-list');
+      const seeMoreBtn = document.getElementById('see-more-btn');
+      const seeLessBtn = document.getElementById('see-less-btn');
       const stockData = await fetchStockData();
+
       if (stockData.length) {
-        stockData.forEach((stock) => {
+        const initialData = stockData.slice(0, 5);
+        const remainingData = stockData.slice(5);
+
+        initialData.forEach((stock) => {
           stockList.appendChild(createStockItem(stock));
+        });
+
+        if (remainingData.length > 0) {
+          seeMoreBtn.style.display = 'block';
+          seeMoreBtn.addEventListener('click', () => {
+            remainingData.forEach((stock) => {
+              stockList.appendChild(createStockItem(stock));
+            });
+            seeMoreBtn.style.display = 'none';
+            seeLessBtn.style.display = 'block';
+          });
+        }
+
+        seeLessBtn.addEventListener('click', () => {
+          stockList.innerHTML = '';
+          initialData.forEach((stock) => {
+            stockList.appendChild(createStockItem(stock));
+          });
+          seeMoreBtn.style.display = 'block';
+          seeLessBtn.style.display = 'none';
         });
       } else {
         stockList.innerHTML = '<p>No stock data available at the moment.</p>';
