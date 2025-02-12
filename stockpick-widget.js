@@ -295,7 +295,7 @@ color: #F58220 !important;
 
         return {
           logo:
-            `https://dev-minio-1628151906.miraeasset.io/web-research/stock_image/${ticker}.png` ||
+            `https://storage.googleapis.com/mirae-webresearch-prd/stocks/${ticker}.png ` ||
             fallbackLogo,
           code: ticker,
           name: stock.attributes.master_stock.data.attributes.name,
